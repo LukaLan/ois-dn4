@@ -1,11 +1,11 @@
 
-var baseUrl = 'https://rest.ehrscape.com/rest/v1';
+var baseUrl = 'https://rest.ehrscape.com/rest/v1'; // kam kličemo
 var queryUrl = baseUrl + '/query';
 
-var username = "ois.seminar";
+var username = "ois.seminar"; // usernam in pass za vse
 var password = "ois4fri";
 
-function getSessionId() {
+function getSessionId() { // pridobivanje token-a
     var response = $.ajax({
         type: "POST",
         url: baseUrl + "/session?username=" + encodeURIComponent(username) +
@@ -19,7 +19,7 @@ function getSessionId() {
 function kreirajEHRzaBolnika() {
 	sessionId = getSessionId();
 
-	var ime = $("#kreirajIme").val();
+	var ime = $("#kreirajIme").val(); // pridobimo ime iz polja z ID-jem kreirajIme
 	var priimek = $("#kreirajPriimek").val();
 	var datumRojstva = $("#kreirajDatumRojstva").val();
 
@@ -30,29 +30,29 @@ function kreirajEHRzaBolnika() {
 		    headers: {"Ehr-Session": sessionId}
 		});
 		$.ajax({
-		    url: baseUrl + "/ehr",
+		    url: baseUrl + "/ehr", // pošiljanje zahteve
 		    type: 'POST',
 		    success: function (data) {
-		        var ehrId = data.ehrId;
+		        var ehrId = data.ehrId; // ko dobimo odgovor
 		        var partyData = {
 		            firstNames: ime,
 		            lastNames: priimek,
 		            dateOfBirth: datumRojstva,
-		            partyAdditionalInfo: [{key: "ehrId", value: ehrId}]
+		            partyAdditionalInfo: [{key: "ehrId", value: ehrId}] // ehr id ko additional info
 		        };
 		        $.ajax({
-		            url: baseUrl + "/demographics/party",
+		            url: baseUrl + "/demographics/party", // da vemo, kakšna je forma, moramo pogledati dokumentacijo na ehr scape
 		            type: 'POST',
 		            contentType: 'application/json',
 		            data: JSON.stringify(partyData),
-		            success: function (party) {
+		            success: function (party) {  // uspešno
 		                if (party.action == 'CREATE') {
 		                    $("#kreirajSporocilo").html("<span class='obvestilo label label-success fade-in'>Uspešno kreiran EHR '" + ehrId + "'.</span>");
 		                    console.log("Uspešno kreiran EHR '" + ehrId + "'.");
 		                    $("#preberiEHRid").val(ehrId);
 		                }
 		            },
-		            error: function(err) {
+		            error: function(err) {  // neuspešno
 		            	$("#kreirajSporocilo").html("<span class='obvestilo label label-danger fade-in'>Napaka '" + JSON.parse(err.responseText).userMessage + "'!");
 		            	console.log(JSON.parse(err.responseText).userMessage);
 		            }
@@ -108,7 +108,7 @@ function dodajMeritveVitalnihZnakov() {
 		$.ajaxSetup({
 		    headers: {"Ehr-Session": sessionId}
 		});
-		var podatki = {
+		var podatki = { // source predloge za vital signs
 			// Preview Structure: https://rest.ehrscape.com/rest/v1/template/Vital%20Signs/example
 		    "ctx/language": "en",
 		    "ctx/territory": "SI",
@@ -121,9 +121,9 @@ function dodajMeritveVitalnihZnakov() {
 		    "vital_signs/blood_pressure/any_event/diastolic": diastolicniKrvniTlak,
 		    "vital_signs/indirect_oximetry:0/spo2|numerator": nasicenostKrviSKisikom
 		};
-		var parametriZahteve = {
+		var parametriZahteve = { // klic template-a
 		    "ehrId": ehrId,
-		    templateId: 'Vital Signs',
+		    templateId: 'Vital Signs', // template id
 		    format: 'FLAT',
 		    committer: merilec
 		};
@@ -132,7 +132,7 @@ function dodajMeritveVitalnihZnakov() {
 		    type: 'POST',
 		    contentType: 'application/json',
 		    data: JSON.stringify(podatki),
-		    success: function (res) {
+		    success: function (res) { // pošiljanje podatkov na server
 		    	console.log(res.meta.href);
 		        $("#dodajMeritveVitalnihZnakovSporocilo").html("<span class='obvestilo label label-success fade-in'>" + res.meta.href + ".</span>");
 		    },
@@ -155,7 +155,7 @@ function preberiMeritveVitalnihZnakov() {
 		$("#preberiMeritveVitalnihZnakovSporocilo").html("<span class='obvestilo label label-warning fade-in'>Prosim vnesite zahtevan podatek!");
 	} else {
 		$.ajax({
-			url: baseUrl + "/demographics/ehr/" + ehrId + "/party",
+			url: baseUrl + "/demographics/ehr/" + ehrId + "/party", // demografski podatki uporabnika
 	    	type: 'GET',
 	    	headers: {"Ehr-Session": sessionId},
 	    	success: function (data) {
@@ -163,7 +163,7 @@ function preberiMeritveVitalnihZnakov() {
 				$("#rezultatMeritveVitalnihZnakov").html("<br/><span>Pridobivanje podatkov za <b>'" + tip + "'</b> bolnika <b>'" + party.firstNames + " " + party.lastNames + "'</b>.</span><br/><br/>");
 				if (tip == "telesna temperatura") {
 					$.ajax({
-					    url: baseUrl + "/view/" + ehrId + "/" + "body_temperature",
+					    url: baseUrl + "/view/" + ehrId + "/" + "body_temperature", // view-jev je veliko. vse je v dokumentaciji za /view
 					    type: 'GET',
 					    headers: {"Ehr-Session": sessionId},
 					    success: function (res) {
@@ -205,7 +205,7 @@ function preberiMeritveVitalnihZnakov() {
 							console.log(JSON.parse(err.responseText).userMessage);
 					    }
 					});					
-				} else if (tip == "telesna temperatura AQL") {
+				} else if (tip == "telesna temperatura AQL") { // AQL poizvezba, ko končaš na apiexplorerju, moraš pretvorit v AQL s "TidyUp"
 					var AQL = 
 						"select " +
     						"t/data[at0002]/events[at0003]/time/value as cas, " +
