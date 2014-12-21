@@ -9,7 +9,7 @@
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
 
-    <title>EhrScape - Sladkor v krvi</title> <!-- popravi!! -->
+    <title>EhrScape - BMI</title> <!-- popravi!! -->
 
     <!-- Bootstrap core CSS -->
     <link href="dist/css/bootstrap.min.css" rel="stylesheet">
@@ -25,7 +25,65 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script> <!-- vključevanje knjižnic -->
-    <script src="demo.js"></script> <!-- skripta se nahaja v demo.js -->
+    <script src="http://yui.yahooapis.com/3.18.1/build/yui/yui-min.js"></script>
+    
+    <script src="app.js"></script> <!-- skripta se nahaja v app.js -->
+    
+    
+
+    
+    <!-- BAR CHART START -->
+    <style>
+      .sUnder {
+        fill: #6BB9F0;
+      }
+      
+      .under {
+        fill: #22A7F0;
+      }
+      
+      .normal {
+        fill: #2ECC71;
+      }
+      
+      .over {
+        fill: #2574A9;
+      }
+      
+      .obese1 {
+        fill: #34495E;
+      }
+      
+      .obese2 {
+        fill: #2C3E50;
+      }
+      
+      .obese3 {
+        fill: #22313F;
+      }
+      
+      .axis {
+        font: 10px sans-serif;
+      }
+      
+      #selected {
+        stroke: #F22613;
+        stroke-width: 2;
+        stroke-opacity: 0.9;
+      }
+      
+      .axis path,
+      .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+      }
+      
+      .x.axis path {
+        display: none;
+      }
+  </style>
+  <!-- BAR CHART END -->
   </head>
 
   <body>
@@ -39,12 +97,12 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">Project name</a>
+          <a class="navbar-brand" href="index.html">BMI (body mass index)</a>
         </div>
         <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="index.html">Home</a></li>
-            <li><a href="about.html">About</a></li>
+            <li class="active"><a href="index.html">Aplikacija</a></li>
+            <li><a href="about.html">O aplikaciji</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
@@ -54,37 +112,163 @@
 
       <div class="starter-template">
         </br >
-        <div class="page-header"><h1>Sladkor v krvi <small>EhrScape demonstracija</small></h1></div>
+        <div class="page-header"><h1>BMI <small>EhrScape demonstracija</small></h1> <span id="drzava"></span></div>
         
         <!--
         <p class="lead">Use this document as a way to quickly start any new project.<br> All you get is this text and a mostly barebones HTML document.</p>
         -->
         
-        
-        <div class="panel panel-default">
-					<div class="panel-heading">
-						<div class="row">
-							<div class="col-lg-8 col-md-8 col-sm-8"><b>Kreiraj EHR zapis</b> za novega bolnika</div>
-							<div class="col-lg-4 col-md-4 col-sm-4"><select class="form-control input-sm" id="preberiPredlogoBolnika">
-							        <option value=""></option>
-							        <option value="Pujsa,Pepa,1938-10-30T14:58">Pujsa Pepa</option>
-							        <option value="Majstore,Majstore,1938-10-30T14:59">Majstore Majstore</option>
-			        </select></div>
-						</div>
-					</div>
-					<div class="panel-body">
-						<span class="label label-default">Ime</span><input id="kreirajIme" type="text" class="form-control input-mini" placeholder="Janez">
-						<span class="label label-default">Priimek</span><input id="kreirajPriimek" type="text" class="form-control" placeholder="Novak">
-						<span class="label label-default">Datum rojstva</span><input id="kreirajDatumRojstva" type="text" class="form-control" placeholder="1957-03-10T09:08">
-						<button type="button" class="btn btn-primary btn-xs" onclick="kreirajEHRzaBolnika()">Dodaj osnovne podatke o bolniku</button><span id="kreirajSporocilo"></span>
-				  	</div>
+        <div class="col-lg-6 col-md-6 col-sm-6">
+          <div class="panel panel-default">
+  					<div class="panel-heading">
+  						<div class="row">
+  							<div class="col-lg-8 col-md-8 col-sm-8"><b>Kreiraj EHR zapis</b> za novega pacienta</div>
+  							<div class="col-lg-4 col-md-4 col-sm-4"><select class="form-control input-sm" id="preberiPredlogoBolnika">
+  							        <option value=""></option>
+  							        <option value="Bill,Gates,178,63.5">Bill Gates</option>
+  							        <option value="Gabe,Newell,170,136">Gabe Newell</option>
+  							        <option value="Cara,Delevingne,177,51">Cara Delevingne</option>
+  			        </select></div>
+  						</div>
+  					</div>
+  					<div class="panel-body">
+  						<span class="label label-default">Ime</span><input id="kreirajIme" type="text" class="form-control input-mini" placeholder="Janez">
+  						<span class="label label-default">Priimek</span><input id="kreirajPriimek" type="text" class="form-control" placeholder="Novak">
+  						<span class="label label-default">Višina [cm]</span><input id="kreirajVisino" type="text" class="form-control" placeholder="180">
+  						<span class="label label-default">Teža [kg]</span><input id="kreirajTezo" type="text" class="form-control" placeholder="75">
+  						<button type="button" class="btn btn-primary btn-xs" onclick="kreirajEHRzaBolnika()">Dodaj osnovne podatke o pacientu</button>
+  						<br><span id="kreirajSporocilo"></span>
+  				  	</div>
+  				</div>
 				</div>
         
         
         
         
         
+        <div class="col-lg-6 col-md-6 col-sm-6">
+  				<div class="panel panel-default">
+  					<div class="panel-heading">
+  						<div class="row">
+  							<div class="col-lg-8 col-md-8 col-sm-8"><b>Preberi BMI </b> obstoječega pacienta</div>
+  							<div class="col-lg-4 col-md-4 col-sm-4"><select class="form-control input-sm" id="preberiObstojeciEHR"><option value=""></option>
+  							<option value="b0687c84-2c2e-4c69-a6af-28559f5473ba">Bill Gates</option>
+  							<option value="bc2f4d87-0bdd-4827-be8d-2713e4259bf1">Gabe Newell</option>
+  							<option value="e389a94b-44ab-4882-bad3-b9ed0b43520a">Cara Delevingne</option></select></div>
+  						</div>
+  					</div>
+  					<div class="panel-body">
+  						<span class="label label-default">EHR ID pacienta</span><input id="preberiEHRid" type="text" class="form-control input-mini" placeholder="7b661e12-3a98-21ad-c29e-2dc9f5a3d885">
+  						<button type="button" class="btn btn-primary btn-xs" onclick="preberiEHRodBolnika()">Preveri informacije o pacientovem BMI</button>
+  						<!-- <br><span id="preberiSporocilo"></span><br> -->
+  						<span id="pacientov-bmi"></span>
+  						<span id="prehrana-tekst"></span>
+  						<span id="odstotek-predebelih"></span>
+  				  </div>
+  				</div>
+        </div>
+  				  	<span id="dodajMeritveVitalnihZnakovSporocilo"></span>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+      <div id="diagram-container" class="col-lg-9 col-md-9 col-sm-9">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<div class="row">
+							<div class="col-lg-12 col-md-12 col-sm-12"><b>BMI</b> globalna porazdelitev</div>
+						</div>
+					</div>
+					<div class="panel-body">
+					  <div id="diagram" ></div>
+          </div>
+		    </div>
       </div>
+        
+        
+        
+      <div id="diagram-legenda" class="col-lg-3 col-md-3 col-sm-3">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<div class="row">
+							<div class="col-lg-12 col-md-12 col-sm-12"><b>Legenda</b></div>
+						</div>
+					</div>
+					<div class="panel-body">
+					  <svg width="20" height="20">
+              <rect width="20" height="20" style="fill: #FFFFFF;stroke-width:2;stroke: #F22613;stroke-opacity: 0.9;" />
+            </svg><b> - vaš BMI </b><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(v tem stolpcu se nahajate vi)<hr>
+			      <svg width="20" height="20">
+              <rect width="20" height="20" style="fill: #6BB9F0;" />
+            </svg><b> - močna podhranjenost </b><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(BMI med 15 in 17)<br>
+            <svg width="20" height="20">
+              <rect width="20" height="20" style="fill: #22A7F0;" />
+            </svg><b> - podhranjenost </b><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(BMI med 17 in 19)<br>
+            <svg width="20" height="20">
+              <rect width="20" height="20" style="fill: #2ECC71;" />
+            </svg><b> - normalna teža </b><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(BMI med 19 in 26)<br>
+            <svg width="20" height="20">
+              <rect width="20" height="20" style="fill: #2574A9;" />
+            </svg><b> - prevelika teža </b><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(BMI med 26 in 31)<br>
+            <svg width="20" height="20">
+              <rect width="20" height="20" style="fill: #34495E;" />
+            </svg><b> - debelost 1. stopnje </b><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(BMI med 31 in 36)<br>
+            <svg width="20" height="20">
+              <rect width="20" height="20" style="fill: #2C3E50;" />
+            </svg><b> - debelost 2. stopnje </b><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(BMI med 36 in 41)<br>
+            <svg width="20" height="20">
+              <rect width="20" height="20" style="fill: #22313F;" />
+            </svg><b> - debelost 3. stopnje </b><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(BMI nad 40)
+          </div>
+		    </div>
+      </div>  
+        
+        
+        
+      <div id="prehrana" class="col-lg-9 col-md-9 col-sm-9">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<div class="row">
+							<div class="col-lg-12 col-md-12 col-sm-12"><b>Zdrava prehrana</b></div>
+						</div>
+					</div>
+					<div class="panel-body"> 
+					
+					
+            <b>Tipi hrane</b>, razvrščeni od <b>največje</b> do <b>najmanjše</b> priporočene pogostosti uživanja. Ob kliku na tip hrane se prikaže drug stolpec, v katerem so našteti nekateri <b>primeri</b> izbranega tipa.<hr>
+            <div id="template" class="yui3-skin-sam dt-example col-lg-12 col-md-12 col-sm-12"> <!-- You need this skin class -->
+            
+              <div class="col-lg-6 col-md-6 col-sm-6" id="mtable"></div>
+          
+                <!-- This is the HTML section for the "Details" markup ...
+                     NOTE: it is hidden initially !!   -->
+                <div class="col-lg-6 col-md-6 col-sm-6" id="chars" style="display:none;">
+                    <div id="dtable"></div>
+                </div>
+              </div>
+            
+          </div>
+		    </div>
+      </div>  
+        
+        
+        
+        
+      </div><!-- /.starter template -->
 
     </div><!-- /.container -->
 
@@ -92,9 +276,12 @@
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="dist/js/bootstrap.min.js"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug 
     <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>-->
   </body>
+  
+    
+  <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+  
 </html>
